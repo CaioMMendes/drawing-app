@@ -4,11 +4,15 @@
 
 @layer base {
   body {
-    @apply h-full overflow-x-hidden bg-zinc-800 text-zinc-50;
+    @apply h-full overflow-x-hidden bg-primary-1 text-zinc-50;
   }
   html {
     @apply h-full;
   }
+}
+
+#root {
+  height: 100%;
 }
 
 ::-webkit-scrollbar {
@@ -16,11 +20,13 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #111d13;
+  background: #090c08;
+  /* '#757083', */
+  /* "primary-3": '#8a95a5' */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #618666;
+  background: #757083;
   border-radius: 999px;
 }
 
