@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply h-full overflow-x-hidden bg-zinc-800 text-zinc-50;
+  }
+  html {
+    @apply h-full;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 0.45rem;
+}
+
+::-webkit-scrollbar-track {
+  background: #111d13;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #618666;
+  border-radius: 999px;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
