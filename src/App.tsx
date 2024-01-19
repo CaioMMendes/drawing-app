@@ -3,7 +3,7 @@ import SideBar from "./components/sidebar";
 import { useDraw } from "./hooks/useDraw";
 
 function App() {
-  const { canvasRef, onMouseDown } = useDraw(drawLine);
+  const { canvasRef, onMouseDown, onMouseOut, clear } = useDraw(drawLine);
 
   //não usei arrow funcion porque se não a função drawLine teria que vir antes da useDraw
   function drawLine({ context, previousPoint, currentPoint }: Draw) {
@@ -28,11 +28,12 @@ function App() {
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-full flex-col md:flex-row">
-        <SideBar />
+        <SideBar clear={clear} />
         <div className="   md:border-l md:border-primary-3  border-b border-primary-1 border-t md:border-t-0">
           <canvas
             width={500}
             height={500}
+            onMouseOut={onMouseOut}
             onMouseDown={onMouseDown}
             ref={canvasRef}
             className=" bg-zinc-500 "

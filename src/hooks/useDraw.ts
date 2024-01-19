@@ -6,12 +6,20 @@ export const useDraw = (
   const [isMouseDown, setIsMouseDown] = useState<boolean>(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const previousPoint = useRef<null | Point>(null);
+  const currentRef = canvasRef.current;
 
   const onMouseDown = () => setIsMouseDown(true);
+  const onMouseOut = () => {
+    previousPoint.current = null;
+  };
+  const clear = () => {
+    if (!currentRef) return;
+    const context = currentRef.getContext("2d");
+    if (!context) return;
+    context.clearRect(0, 0, currentRef.width, currentRef.height);
+  };
 
   useEffect(() => {
-    const currentRef = canvasRef.current;
-
     const handler = (e: MouseEvent) => {
       if (!isMouseDown) return;
       const currentPoint = computePointInCanvas(e);
@@ -26,8 +34,6 @@ export const useDraw = (
       //change coordenates 0,0 to canvas border
       if (!currentRef) return;
       const rect = currentRef.getBoundingClientRect();
-      console.log(e.clientX - rect.left);
-      console.log(e.clientY - rect.top);
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
       return { x, y };
@@ -45,7 +51,8 @@ export const useDraw = (
       currentRef?.removeEventListener("mousemove", handler);
       window.removeEventListener("mouseup", handleMouseUp);
     };
+    //eslint-disable-next-line
   }, [DrawLine]);
 
-  return { canvasRef, onMouseDown };
+  return { canvasRef, onMouseDown, onMouseOut, clear };
 };
