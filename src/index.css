@@ -21,8 +21,6 @@
 
 ::-webkit-scrollbar-track {
   background: #090c08;
-  /* '#757083', */
-  /* "primary-3": '#8a95a5' */
 }
 
 ::-webkit-scrollbar-thumb {
@@ -30,6 +28,6 @@
   border-radius: 999px;
 }
 
-html {
+/* html {
   scrollbar-gutter: stable;
-}
+} */
