@@ -27,9 +27,10 @@ function App() {
     context.arc(
       startPoint.x,
       startPoint.y,
-      lineWidth /*Se deixar muito baixo fica zoado os pontos*/,
+      lineWidth / 2 /*Se deixar muito baixo fica zoado os pontos*/,
       0,
-      2 * Math.PI
+      2 * Math.PI,
+      true
     );
     context.fill();
   }
@@ -40,12 +41,14 @@ function App() {
         <SideBar clear={clear} />
         <div className="   md:border-l md:border-primary-3  border-b border-primary-1 border-t md:border-t-0">
           <canvas
-            width={500}
-            height={500}
+            width={300}
+            height={300}
             onMouseOut={onMouseOut}
             onMouseDown={onMouseDown}
+            onTouchMove={onMouseDown}
+            onTouchEnd={onMouseOut}
             ref={canvasRef}
-            className=" bg-zinc-500 "
+            className=" bg-zinc-500 touch-none"
           />
         </div>
         <div className="flex flex-col gap-3">
