@@ -44,7 +44,7 @@ const SideBar = ({
       <div className="flex flex-col md:flex-col gap-2 flex-1">
         {/* <img src="/icon.png" alt="Icon image" width={40} height={40} /> */}
         <div className="flex gap-2 justify-between md:flex-col">
-          <div className="flex flex-col h-full justify-around">
+          <div className="flex flex-col h-full justify-around gap-2">
             <Button
               variant="button"
               onClick={() => setTool("pencil")}
