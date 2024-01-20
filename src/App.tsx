@@ -1,21 +1,60 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "./components/footer";
 import SideBar from "./components/sidebar";
 import { useDraw } from "./hooks/useDraw";
-import { ChromePicker } from "react-color";
-import Input from "./components/input";
-import Button from "./components/button";
 
 function App() {
   const { canvasRef, onMouseDown, onMouseOut, clear, undoLast } =
     useDraw(drawLine);
-  const downloadRef = useRef<HTMLAnchorElement | null>(null);
+  const [canvasdimensions, setCanvasDimensions] = useState({
+    width: 360,
+    height: 360,
+  });
+  // const windowSize = useRef([window.innerWidth, window.innerHeight]);
 
-  const handleDownload = () => {
-    if (!canvasRef.current || !downloadRef.current) return;
-    downloadRef.current.href = canvasRef.current?.toDataURL("image/png");
-    downloadRef.current.download = "Drawing image";
+  const [windowSize, setWindowSize] = useState({
+    width: window.visualViewport?.width,
+    height: window.visualViewport?.height,
+    // width: window.innerWidth,
+    // height: window.innerHeight,
+  });
+
+  const updateWindowSize = () => {
+    if (!window.visualViewport) return;
+    setWindowSize({
+      width: window.visualViewport?.width,
+      height: window.visualViewport?.height,
+    });
   };
+  useEffect(() => {
+    window.addEventListener("resize", updateWindowSize);
+    return () => {
+      window.removeEventListener("resize", updateWindowSize);
+    };
+  }, []);
+  useEffect(() => {
+    const rect = canvasRef?.current?.getBoundingClientRect();
+    const leftCanvas = rect?.left;
+    const topCanvas = rect?.top;
+    // const bottomCanvas = rect?.bottom;
+    if (
+      leftCanvas === undefined ||
+      leftCanvas === null ||
+      topCanvas === undefined ||
+      topCanvas === null ||
+      windowSize.height === undefined ||
+      windowSize.width === undefined
+      // bottomCanvas === undefined ||
+      // bottomCanvas === null
+    )
+      return;
+
+    setCanvasDimensions({
+      width: windowSize.width - leftCanvas,
+      height: windowSize.height - topCanvas,
+    });
+  }, [windowSize, canvasRef]);
+
   useEffect(() => {
     function handleUndoKey(e: KeyboardEvent) {
       if (e.ctrlKey && e.key === "z") {
@@ -59,13 +98,21 @@ function App() {
   }
 
   return (
-    <div className="flex h-full flex-col select-none">
-      <div className="flex h-full flex-col md:flex-row">
-        <SideBar clear={clear} />
-        <div className="   md:border-l md:border-primary-3  border-b border-primary-1 border-t md:border-t-0">
+    <div className="flex h-full flex-col select-none flex-1">
+      <div className="flex h-full flex-col md:flex-row flex-1">
+        <SideBar
+          clear={clear}
+          color={color}
+          setColor={setColor}
+          lineWidth={lineWidth}
+          setLineWidth={setLineWidth}
+          canvasRef={canvasRef}
+          undoLast={undoLast}
+        />
+        <div className="md:border-l md:border-primary-3  border-b border-primary-1 border-t md:border-t-0">
           <canvas
-            width={350}
-            height={350}
+            width={canvasdimensions.width}
+            height={canvasdimensions.height}
             onMouseOut={onMouseOut}
             onMouseDown={onMouseDown}
             onTouchMove={onMouseDown}
@@ -74,40 +121,8 @@ function App() {
             className=" bg-white touch-none "
           />
         </div>
-        <div className="flex flex-col gap-3">
-          <ChromePicker
-            color={color}
-            className="h-fit"
-            onChange={(e) =>
-              setColor(`rgba(${e.rgb.r}, ${e.rgb.g}, ${e.rgb.b}, ${e.rgb.a})`)
-            }
-          />
-          <div className="flex">
-            <div className="flex flex-col gap-2">
-              Tamanho
-              <Input
-                type="range"
-                className="w-full border-none outline-none accent-primary-2"
-                value={lineWidth}
-                step={1}
-                min={1}
-                max={60}
-                onChange={(e) => setLineWidth(Number(e.target.value))}
-              />
-            </div>
-            {lineWidth}
-          </div>
-        </div>
       </div>
-      <Button onClick={undoLast}>Undo</Button>
-      <a href="" download={"Drawing image"}>
-        Download
-      </a>
-      <a ref={downloadRef}>
-        <Button variant="button" onClick={handleDownload}>
-          Download
-        </Button>
-      </a>
+
       <Footer />
     </div>
   );
