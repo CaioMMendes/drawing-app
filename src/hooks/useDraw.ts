@@ -6,6 +6,8 @@ export const useDraw = (
   const [isMouseDown, setIsMouseDown] = useState<boolean>(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const previousPoint = useRef<null | Point>(null);
+  const [restoreArray, setRestoreArray] = useState<ImageData[] | []>([]);
+  const [indexArray, setIndexArray] = useState<number>(-1);
   const currentRef = canvasRef.current;
 
   const onMouseDown = () => setIsMouseDown(true);
@@ -17,6 +19,22 @@ export const useDraw = (
     const context = currentRef.getContext("2d");
     if (!context) return;
     context.clearRect(0, 0, currentRef.width, currentRef.height);
+    setIndexArray(-1);
+    setRestoreArray([]);
+  };
+
+  const undoLast = () => {
+    if (indexArray <= 0) {
+      clear();
+    } else {
+      if (!currentRef) return;
+      setIndexArray((indexArray) => indexArray - 1);
+      setRestoreArray((restoreArray) => restoreArray.slice(0, -1));
+      const context = currentRef.getContext("2d");
+      if (!context) return;
+      //precisa usar o indexArray - 1 porque ele só vai atualizar o state depois
+      context.putImageData(restoreArray[indexArray - 1], 0, 0);
+    }
   };
 
   useEffect(() => {
@@ -48,22 +66,34 @@ export const useDraw = (
       }
     };
     const handleMouseUp = () => {
+      if (!currentRef) return;
       setIsMouseDown(false);
       previousPoint.current = null;
+      const context = currentRef?.getContext("2d");
+      if (!context) return;
+
+      setRestoreArray((restoreArray) => [
+        ...restoreArray,
+        context.getImageData(0, 0, currentRef.width, currentRef.height),
+      ]);
+      setIndexArray((indexArray) => indexArray + 1);
+      context.closePath();
     };
     //add event listeners
     currentRef?.addEventListener("mousemove", handler);
     currentRef?.addEventListener("touchmove", handler);
     window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("touchend", handleMouseUp);
 
     //remove event listeners
     return () => {
       currentRef?.removeEventListener("mousemove", handler);
       currentRef?.removeEventListener("touchmove", handler);
       window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchend", handleMouseUp);
     };
     //eslint-disable-next-line
   }, [DrawLine]);
 
-  return { canvasRef, onMouseDown, onMouseOut, clear };
+  return { canvasRef, onMouseDown, onMouseOut, clear, undoLast };
 };

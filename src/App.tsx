@@ -1,12 +1,35 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Footer from "./components/footer";
 import SideBar from "./components/sidebar";
 import { useDraw } from "./hooks/useDraw";
 import { ChromePicker } from "react-color";
 import Input from "./components/input";
+import Button from "./components/button";
 
 function App() {
-  const { canvasRef, onMouseDown, onMouseOut, clear } = useDraw(drawLine);
+  const { canvasRef, onMouseDown, onMouseOut, clear, undoLast } =
+    useDraw(drawLine);
+  const downloadRef = useRef<HTMLAnchorElement | null>(null);
+
+  const handleDownload = () => {
+    if (!canvasRef.current || !downloadRef.current) return;
+    downloadRef.current.href = canvasRef.current?.toDataURL("image/png");
+    downloadRef.current.download = "Drawing image";
+  };
+  useEffect(() => {
+    function handleUndoKey(e: KeyboardEvent) {
+      if (e.ctrlKey && e.key === "z") {
+        undoLast();
+      }
+    }
+    // Adiciona o ouvinte de eventos ao documento
+    document.addEventListener("keydown", handleUndoKey);
+
+    // Remove o ouvinte de eventos quando o componente é desmontado
+    return () => {
+      document.removeEventListener("keydown", handleUndoKey);
+    };
+  }, [undoLast]); // O segundo parâmetro vazio [] garante que o efeito só é executado uma vez, sem dependências
   const [color, setColor] = useState("rgba(0, 0, 0, 1)");
   const [lineWidth, setLineWidth] = useState(5);
   //não usei arrow funcion porque se não a função drawLine teria que vir antes da useDraw
@@ -36,19 +59,19 @@ function App() {
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col select-none">
       <div className="flex h-full flex-col md:flex-row">
         <SideBar clear={clear} />
         <div className="   md:border-l md:border-primary-3  border-b border-primary-1 border-t md:border-t-0">
           <canvas
-            width={300}
-            height={300}
+            width={350}
+            height={350}
             onMouseOut={onMouseOut}
             onMouseDown={onMouseDown}
             onTouchMove={onMouseDown}
             onTouchEnd={onMouseOut}
             ref={canvasRef}
-            className=" bg-zinc-500 touch-none"
+            className=" bg-white touch-none "
           />
         </div>
         <div className="flex flex-col gap-3">
@@ -76,6 +99,15 @@ function App() {
           </div>
         </div>
       </div>
+      <Button onClick={undoLast}>Undo</Button>
+      <a href="" download={"Drawing image"}>
+        Download
+      </a>
+      <a ref={downloadRef}>
+        <Button variant="button" onClick={handleDownload}>
+          Download
+        </Button>
+      </a>
       <Footer />
     </div>
   );
