@@ -45,9 +45,16 @@ function App() {
   useEffect(() => {
     const context = canvasRef.current?.getContext("2d");
     if (!context) return;
-    context.fillStyle = drawType === "JPEG" ? "#fff" : "rgba(0,0,0,0)";
+    if (drawType === "JPEG") {
+      context.fillStyle = "#fff";
+    }
+    if (drawType === "PNG") {
+      clear();
+      context.fillStyle = "rgba(0,0,0,0)";
+    }
     if (!canvasRef.current) return;
     context.fillRect(0, 0, canvasRef.current?.width, canvasRef.current?.height);
+    //eslint-disable-next-line
   }, [drawType, canvasRef]);
 
   //altera de lápis para borracha
