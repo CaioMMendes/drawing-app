@@ -11,7 +11,8 @@ function App() {
     height: 360,
   });
   // const windowSize = useRef([window.innerWidth, window.innerHeight]);
-
+  const [drawType, setDrawType] = useState<"PNG" | "JPEG">("PNG");
+  const [tool, setTool] = useState<"pencil" | "eraser">("pencil");
   const [windowSize, setWindowSize] = useState({
     width: window.visualViewport?.width,
     height: window.visualViewport?.height,
@@ -28,10 +29,34 @@ function App() {
   };
   useEffect(() => {
     window.addEventListener("resize", updateWindowSize);
+    const context = canvasRef.current?.getContext("2d");
+    if (!context) return;
+    context.fillStyle = drawType === "JPEG" ? "#fff" : "rgba(0,0,0,0)";
+    if (!canvasRef.current) return;
+    context.fillRect(0, 0, canvasRef.current?.width, canvasRef.current?.height);
     return () => {
       window.removeEventListener("resize", updateWindowSize);
     };
+    //eslint-disable-next-line
   }, []);
+  useEffect(() => {
+    const context = canvasRef.current?.getContext("2d");
+    if (!context) return;
+    context.fillStyle = drawType === "JPEG" ? "#fff" : "rgba(0,0,0,0)";
+    if (!canvasRef.current) return;
+    context.fillRect(0, 0, canvasRef.current?.width, canvasRef.current?.height);
+    drawType === "JPEG"
+      ? (context.globalCompositeOperation = "destination-out")
+      : (context.globalCompositeOperation = "source-over");
+  }, [drawType, canvasRef]);
+  useEffect(() => {
+    const context = canvasRef.current?.getContext("2d");
+    if (!context) return;
+    tool === "pencil"
+      ? (context.globalCompositeOperation = "source-over")
+      : (context.globalCompositeOperation = "destination-out");
+  }, [tool, canvasRef]);
+
   useEffect(() => {
     const rect = canvasRef?.current?.getBoundingClientRect();
     const leftCanvas = rect?.left;
@@ -108,8 +133,12 @@ function App() {
           setLineWidth={setLineWidth}
           canvasRef={canvasRef}
           undoLast={undoLast}
+          drawType={drawType}
+          setDrawType={setDrawType}
+          tool={tool} 
+          setTool={setTool}
         />
-        <div className="md:border-l md:border-primary-3  border-b border-primary-1 border-t md:border-t-0">
+        <div className="md:border-l md:border-primary-2/80  border-b border-primary-1 border-t md:border-t-0">
           <canvas
             width={canvasdimensions.width}
             height={canvasdimensions.height}

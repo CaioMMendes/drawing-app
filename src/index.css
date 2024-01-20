@@ -7,7 +7,7 @@
     @apply h-full overflow-x-hidden bg-primary-1 text-zinc-50;
   }
   html {
-    @apply h-full;
+    @apply h-full box-border;
   }
 }
 
