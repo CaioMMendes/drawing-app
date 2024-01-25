@@ -39,6 +39,23 @@ const SideBar = ({
     downloadRef.current.href = canvasRef.current?.toDataURL("image/png");
     downloadRef.current.download = "Drawing image";
   };
+
+  const handleChangeDrawType = () => {
+    const confirm = window.confirm(
+      "Caso clique em ok seu desenho será excluido para trocar o tipo de download."
+    );
+    if (confirm) {
+      setDrawType((drawType) => (drawType === "PNG" ? "JPEG" : "PNG"));
+    }
+  };
+
+  const handleClearCanvas = () => {
+    const confirm = window.confirm("Desenha apagar todo o desenho?");
+    if (confirm) {
+      clear();
+    }
+  };
+
   return (
     <div className="flex md:flex-col md:h-full gap-2 bg-primary-1 p-2 ">
       <div className="flex flex-col md:flex-col gap-2 flex-1">
@@ -86,7 +103,7 @@ const SideBar = ({
           <div className="flex  justify-center w-full">
             <ChromePicker
               color={color}
-              className="flex flex-col flex-1 justify-center"
+              className="flex flex-col flex-1 justify-center bg-blue-500"
               onChange={(e) =>
                 setColor(`rgba(${e.rgb.r}, ${e.rgb.g}, ${e.rgb.b}, ${e.rgb.a})`)
               }
@@ -95,24 +112,19 @@ const SideBar = ({
         </div>
         <div className="flex justify-around gap-2 md:flex-col">
           <Button variant="button" onClick={undoLast}>
-            Undo
+            Desfazer
           </Button>
-          <Button onClick={clear} variant="button">
-            Clear
-          </Button>
-          <Button
-            variant="button"
-            onClick={() =>
-              setDrawType((drawType) => (drawType === "PNG" ? "JPEG" : "PNG"))
-            }
-          >
-            {drawType}
+          <Button onClick={handleClearCanvas} variant="button">
+            Limpar
           </Button>
           <a ref={downloadRef}>
             <Button variant="button" onClick={handleDownload}>
               Download
             </Button>
           </a>
+          <Button variant="button" onClick={handleChangeDrawType}>
+            {drawType}
+          </Button>
         </div>
       </div>
       <div className="gap-2 justify-center items-center hidden text-sm md:flex">

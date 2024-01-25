@@ -7,6 +7,7 @@ export const useDraw = (
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const previousPoint = useRef<null | Point>(null);
   const [restoreArray, setRestoreArray] = useState<ImageData[] | []>([]);
+  // const [redoArray, setRedoArray] = useState<ImageData[] | []>([]);
   const [indexArray, setIndexArray] = useState<number>(-1);
   const currentRef = canvasRef.current;
 
@@ -35,6 +36,10 @@ export const useDraw = (
       //precisa usar o indexArray - 1 porque ele só vai atualizar o state depois
       context.putImageData(restoreArray[indexArray - 1], 0, 0);
     }
+  };
+
+  const redoLast = () => {
+    return;
   };
 
   useEffect(() => {
@@ -76,6 +81,7 @@ export const useDraw = (
         ...restoreArray,
         context.getImageData(0, 0, currentRef.width, currentRef.height),
       ]);
+
       setIndexArray((indexArray) => indexArray + 1);
       context.closePath();
     };
@@ -95,5 +101,5 @@ export const useDraw = (
     //eslint-disable-next-line
   }, [DrawLine]);
 
-  return { canvasRef, onMouseDown, onMouseOut, clear, undoLast };
+  return { canvasRef, onMouseDown, onMouseOut, clear, undoLast, redoLast };
 };
