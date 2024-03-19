@@ -14,6 +14,10 @@ function App() {
   // const windowSize = useRef([window.innerWidth, window.innerHeight]);
   const [drawType, setDrawType] = useState<"PNG" | "JPEG">("PNG");
   const [tool, setTool] = useState<"pencil" | "eraser">("pencil");
+  // const [position, setPosition] = useState({
+  //   x: 0,
+  //   y: 0,
+  // });
 
   useKey("z", undoLast);
   const { canvasdimensions } = useResize(canvasRef);
@@ -49,6 +53,18 @@ function App() {
       ? (context.globalCompositeOperation = "source-over")
       : (context.globalCompositeOperation = "destination-out");
   }, [tool, canvasRef]);
+
+  // const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+  //   if (!canvasRef.current) return;
+  //   const rect = canvasRef.current.getBoundingClientRect();
+  //   setPosition({
+  //     x: e.clientX - rect.left,
+  //     y: e.clientY - rect.top - canvasRef.current.height,
+  //   });
+  // };
+  // const handlePointerOut = (e: React.PointerEvent<HTMLCanvasElement>) => {
+  //   // setPosition(x)
+  // };
 
   //não usei arrow funcion porque se não a função drawLine teria que vir antes da useDraw
   function drawLine({ context, previousPoint, currentPoint }: Draw) {
@@ -92,8 +108,9 @@ function App() {
           tool={tool}
           setTool={setTool}
         />
-        <div className="md:border-l md:border-primary-2/80  border-b border-primary-1 border-t md:border-t-0">
+        <div className="md:border-l md:border-primary-2/80 relative  border-b border-primary-1 border-t md:border-t-0">
           <canvas
+            // onPointerMove={handlePointerMove}
             width={canvasdimensions.width}
             height={canvasdimensions.height}
             onMouseOut={onMouseOut}
@@ -103,6 +120,17 @@ function App() {
             ref={canvasRef}
             className=" bg-white touch-none "
           />
+          {/* <span
+            className={`bg-[${color}] absolute rounded-full size-[${lineWidth}] `}
+            style={{
+              // position: "absolute",
+              backgroundColor: "red",
+              // borderRadius: "50%",
+              transform: `translate(${position.x - lineWidth / 2}px, ${position.y - lineWidth / 2}px)`,
+              width: lineWidth,
+              height: lineWidth,
+            }}
+          /> */}
         </div>
       </div>
 

@@ -50,7 +50,7 @@ const SideBar = ({
   };
 
   const handleClearCanvas = () => {
-    const confirm = window.confirm("Desenha apagar todo o desenho?");
+    const confirm = window.confirm("Deseja apagar todo o desenho?");
     if (confirm) {
       clear();
     }
